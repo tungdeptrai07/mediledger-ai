@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediLedger AI | Explainable AI Medical Triage & Zero-PII Web3 Health Passport</title>
+  <style>
+    :root {
+      --bg:#060a12; --card:#0d1424; --border:#1c2942; --teal:#14b8a6; --blue:#3b82f6;
+      --red:#ef4444; --amber:#f59e0b; --green:#10b981; --text:#f1f5f9; --muted:#94a3b8;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; font-family:'Inter',system-ui,sans-serif; }
+    body { background:var(--bg); color:var(--text); min-height:100vh; }
+    header {
+      background:rgba(13,20,36,0.92); backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border); padding:15px 28px;
+      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .logo {
+      width:40px; height:40px; border-radius:10px;
+      background:linear-gradient(135deg,var(--teal),var(--blue));
+      display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; color:#04161a;
+    }
+    .container { max-width:1240px; margin:0 auto; padding:24px 28px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1.15fr; gap:22px; }
+    @media(max-width:900px) { .grid-2 { grid-template-columns:1fr; } }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; margin-bottom:20px; }
+    .card h2 { font-size:16px; margin-bottom:6px; color:var(--teal); }
+    p.desc { font-size:13px; color:var(--muted); margin-bottom:16px; line-height:1.5; }
+    .sym-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+    .sym-item {
+      display:flex; align-items:center; gap:8px; background:#080d19; border:1px solid var(--border);
+      padding:9px 12px; border-radius:9px; font-size:13px; cursor:pointer;
+    }
+    .vitals-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+    label { display:block; font-size:11.5px; color:var(--muted); font-weight:600; margin-bottom:5px; }
+    input[type="text"], input[type="number"] {
+      width:100%; background:#080d19; border:1px solid var(--border); color:var(--text);
+      padding:9px 12px; border-radius:9px; font-size:13px;
+    }
+    .btn {
+      width:100%; padding:11px; border:none; border-radius:10px; cursor:pointer;
+      background:linear-gradient(135deg,var(--teal),var(--blue)); color:#041418;
+      font-weight:800; font-size:13.5px;
+    }
+    .tier-box {
+      padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid var(--border);
+      background:#080d19; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+    }
+    .badge { padding:5px 12px; border-radius:99px; font-size:12px; font-weight:800; }
+    .tier-crit { background:rgba(239,68,68,0.18); color:#f87171; border:1px solid rgba(239,68,68,0.4); }
+    .tier-urg { background:rgba(245,158,11,0.18); color:#fbbf24; border:1px solid rgba(245,158,11,0.4); }
+    .tier-rout { background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.4); }
+    pre {
+      background:#050811; border:1px solid var(--border); border-radius:11px; padding:14px;
+      font-family:Consolas,monospace; font-size:12px; color:#7dd3fc; overflow-x:auto; max-height:300px;
+    }
+    .ledger-item {
+      background:#080d19; border:1px solid var(--border); border-radius:10px;
+      padding:12px 14px; margin-top:10px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">M+</div>
+    <div>
+      <h1 style="font-size:18px;">MediLedger AI</h1>
+      <p style="font-size:12px; color:var(--muted);">Explainable AI Medical Triage &amp; Zero-PII Web3 Health Passport (CODEFESTTHON 2026)</p>
+    </div>
+  </div>
+  <div style="font-size:12px; color:var(--teal); font-weight:700;">Tracks: AI/ML &bull; HealthTech &bull; Web3</div>
+</header>
+
+<div class="container">
+  <div class="grid-2">
+    <div class="card">
+      <h2>1. Patient Vitals &amp; Symptom Triage Input</h2>
+      <p class="desc">Enter anonymized patient alias, observed symptoms, and vital signs. Explainable AI computes risk urgency while hashing records locally so zero raw PII goes on-chain.</p>
+
+      <div style="margin-bottom:14px;">
+        <label>Anonymized Patient Alias / DID</label>
+        <input type="text" id="patientAlias" value="did:med:patient-042" />
+      </div>
+
+      <label>Select Reported Clinical Symptoms</label>
+      <div class="sym-grid">
+        <label class="sym-item"><input type="checkbox" value="chest_pain" checked /> Chest Pain (+45)</label>
+        <label class="sym-item"><input type="checkbox" value="shortness_of_breath" /> Shortness of Breath (+40)</label>
+        <label class="sym-item"><input type="checkbox" value="high_fever" checked /> High Fever (+25)</label>
+        <label class="sym-item"><input type="checkbox" value="persistent_cough" /> Persistent Cough (+15)</label>
+        <label class="sym-item"><input type="checkbox" value="dizziness" /> Dizziness (+20)</label>
+        <label class="sym-item"><input type="checkbox" value="headache" /> Headache (+10)</label>
+      </div>
+
+      <div class="vitals-row">
+        <div><label>Heart Rate (bpm)</label><input type="number" id="hrInput" value="112" /></div>
+        <div><label>SpO2 (%)</label><input type="number" id="spo2Input" value="94" /></div>
+        <div><label>Temp (&deg;C)</label><input type="number" id="tempInput" value="39.2" step="0.1" /></div>
+      </div>
+
+      <button class="btn" onclick="evaluateTriage()">Run Explainable AI Triage &amp; Mint Health Attestation</button>
+    </div>
+
+    <div class="card">
+      <h2>2. AI Clinical Triage &amp; Cryptographic Attestation</h2>
+      <p class="desc">Real-time clinical routing decision + SHA-256 Zero-PII verification receipt for hospital intake.</p>
+
+      <div class="tier-box">
+        <div>
+          <div style="font-size:12px; color:var(--muted);">RECOMMENDED DEPARTMENT</div>
+          <div id="deptOut" style="font-size:18px; font-weight:800; margin-top:4px;">Cardiology / Emergency</div>
+        </div>
+        <div style="text-align:right;">
+          <span id="urgencyBadge" class="badge tier-crit">CRITICAL_IMMEDIATE (100/100)</span>
+        </div>
+      </div>
+
+      <pre id="triageJsonOut"></pre>
+
+      <h2 style="margin-top:18px;">3. On-Chain Attestation Registry (Zero Raw PII)</h2>
+      <div id="ledgerContainer"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const WEIGHTS = {
+    chest_pain: { sev: 45, flag: "RED", dept: "Cardiology / Emergency" },
+    shortness_of_breath: { sev: 40, flag: "RED", dept: "Pulmonology / Emergency" },
+    high_fever: { sev: 25, flag: "AMBER", dept: "Internal Medicine" },
+    persistent_cough: { sev: 15, flag: "AMBER", dept: "Pulmonology" },
+    dizziness: { sev: 20, flag: "AMBER", dept: "Neurology / General" },
+    headache: { sev: 10, flag: "GREEN", dept: "General Practice" }
+  };
+
+  let ledger = [];
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+    return "0x" + Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function evaluateTriage() {
+    const alias = document.getElementById("patientAlias").value.trim() || "did:med:anon";
+    const checked = Array.from(document.querySelectorAll('.sym-grid input:checked')).map(el => el.value);
+    const hr = parseInt(document.getElementById("hrInput").value, 10) || 78;
+    const spo2 = parseInt(document.getElementById("spo2Input").value, 10) || 98;
+    const temp = parseFloat(document.getElementById("tempInput").value) || 37.0;
+
+    let score = 0;
+    let factors = [];
+    let dept = "General Practice";
+
+    checked.forEach(s => {
+      const w = WEIGHTS[s];
+      if (!w) return;
+      score += w.sev;
+      factors.push(`${s} (+${w.sev})`);
+      if (w.flag === "RED") dept = w.dept;
+      else if (w.flag === "AMBER" && dept === "General Practice") dept = w.dept;
+    });
+
+    if (spo2 < 92) { score += 35; factors.push(`Hypoxia SpO2=${spo2}% (+35)`); dept = "Emergency / ICU"; }
+    else if (spo2 < 95) { score += 15; factors.push(`Low SpO2=${spo2}% (+15)`); }
+    if (hr > 120 || hr < 45) { score += 25; factors.push(`Abnormal HR=${hr}bpm (+25)`); }
+    if (temp >= 39.0) { score += 20; factors.push(`High Pyrexia ${temp}C (+20)`); }
+
+    score = Math.min(100, Math.max(0, score));
+    const tier = score >= 60 ? "CRITICAL_IMMEDIATE" : (score >= 30 ? "URGENT_24H" : "ROUTINE_OUTPATIENT");
+
+    const ts = new Date().toISOString();
+    const hash = await sha256(`${alias}|${checked.join(",")}|${hr}|${spo2}|${temp}|${tier}|${ts}`);
+
+    const result = {
+      patient_alias: alias,
+      urgency_tier: tier,
+      risk_score: score,
+      recommended_department: dept,
+      clinical_factors: factors,
+      vitals: { hr_bpm: hr, spo2_pct: spo2, temp_c: temp },
+      onchain_attestation_hash: hash,
+      timestamp: ts
+    };
+
+    document.getElementById("deptOut").textContent = dept;
+    const badge = document.getElementById("urgencyBadge");
+    badge.textContent = `${tier} (${score}/100)`;
+    badge.className = `badge ${score >= 60 ? "tier-crit" : (score >= 30 ? "tier-urg" : "tier-rout")}`;
+    document.getElementById("triageJsonOut").textContent = JSON.stringify(result, null, 2);
+
+    ledger.unshift(result);
+    document.getElementById("ledgerContainer").innerHTML = ledger.slice(0, 3).map(r => `
+      <div class="ledger-item">
+        <div>
+          <div style="font-weight:700; font-size:13px;">${r.patient_alias} &rarr; ${r.recommended_department}</div>
+          <div style="font-size:11px; color:var(--teal); font-family:monospace;">Attestation: ${r.onchain_attestation_hash.slice(0, 26)}...</div>
+        </div>
+        <span class="badge ${r.risk_score >= 60 ? 'tier-crit' : (r.risk_score >= 30 ? 'tier-urg' : 'tier-rout')}">${r.urgency_tier}</span>
+      </div>
+    `).join("");
+  }
+
+  evaluateTriage();
+</script>
+</body>
+</html>
